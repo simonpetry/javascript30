@@ -59,6 +59,56 @@
 
 <script>
 
+    const MEMOIZED_KEYS = {};
+    const MEMOIZED_AUDIO = {};
+
+    function playSound(key, audio) {
+        if (!audio) {
+            return;
+        }
+
+        audio.currentTime = 0; // If playing, reset the current playing element to the start
+        audio.play(); // Play it
+
+        key.classList.add('playing'); // Add a visual queue
+    }
+
+    function removeTransition(event) {
+        if (event.propertyName !== 'transform') {
+            return;
+        }
+
+        this.classList.remove('playing');
+    }
+
+    function getKey(event) {
+        let localReference = `.key[data-key="${event.keyCode}"`;
+        let localKey = MEMOIZED_KEYS[localReference];
+        if (localKey) {
+            return localKey;
+        }
+        MEMOIZED_KEYS[localReference] = document.querySelector(localReference);
+        return MEMOIZED_KEYS[localReference];
+    }
+
+    function getAudio(event) {
+        let localReference = `audio[data-key="${event.keyCode}"`;
+        let localAudio = MEMOIZED_AUDIO[localReference];
+        if (localAudio) {
+            return localAudio;
+        }
+        MEMOIZED_AUDIO[localReference] = document.querySelector(localReference);
+        return MEMOIZED_AUDIO[localReference];
+    }
+
+    const keys = document.querySelectorAll('.key');
+
+    keys.forEach((key) => key.addEventListener('transitionend', removeTransition) );
+
+    window.addEventListener('keydown', (event) => {
+        playSound(getKey(event), getAudio(event));
+    });
+
 </script>
 
 
