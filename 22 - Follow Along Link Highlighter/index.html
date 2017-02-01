@@ -25,31 +25,44 @@
       <p>Aliquam <a href="">dicta</a> sequi culpa fugiat <a href="">consequuntur</a> pariatur optio ad minima, maxime <a href="">odio</a>, distinctio magni impedit tempore enim repellendus <a href="">repudiandae</a> quas!</p>
     </div>
 
-<script>
-  const triggers = document.querySelectorAll('a');
-  const highlight = document.createElement('span');
-  highlight.classList.add('highlight');
-  document.body.append(highlight);
+  <script>
+    const triggers = Array.from(document.querySelectorAll('a'));
+    const highlight = document.createElement('span');
+    highlight.classList.add('highlight');
+    document.body.append(highlight);
 
-  function highlightLink() {
-    const linkCoords = this.getBoundingClientRect();
-    console.log(linkCoords);
-    const coords = {
-      width: linkCoords.width,
-      height: linkCoords.height,
-      top: linkCoords.top + window.scrollY,
-      left: linkCoords.left + window.scrollX
-    };
+    // Maintain a state of the last highlight linked
+    let lastHighlight;
 
-    highlight.style.width = `${coords.width}px`;
-    highlight.style.height = `${coords.height}px`;
-    highlight.style.transform = `translate(${coords.left}px, ${coords.top}px)`;
+    function highlightLink() {
 
-  }
+      // Use in case of a window resize
+      lastHighlight = this;
 
-  triggers.forEach(a => a.addEventListener('mouseenter', highlightLink));
+      const linkCoords = this.getBoundingClientRect();
+      const coords = {
+        width: linkCoords.width,
+        height: linkCoords.height,
+        top: linkCoords.top + window.scrollY,
+        left: linkCoords.left + window.scrollX
+      };
 
-</script>
+      highlight.style.width = `${coords.width}px`;
+      highlight.style.height = `${coords.height}px`;
+      highlight.style.transform = `translate(${coords.left}px, ${coords.top}px)`;
+    }
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('mouseenter', highlightLink);
+    });
+
+    // This should be debounced
+    window.addEventListener('resize', () => {
+      if (!lastHighlight) {
+        return;
+      }
+      highlightLink.call(lastHighlight)
+    });
+  </script>
 </body>
 </html>
-
