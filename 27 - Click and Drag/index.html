@@ -36,14 +36,17 @@
 
 <script>
   const slider = document.querySelector('.items');
-  let isDown = false;
+  let isDown = false; // flag for clicking or not
   let startX;
   let scrollLeft;
 
-  slider.addEventListener('mousedown', (e) => {
+  slider.addEventListener('mousedown', (event) => {
     isDown = true;
-    slider.classList.add('active');
-    startX = e.pageX - slider.offsetLeft;
+
+    // this is failing pretty bad in modern Chrome, disabling it
+    // slider.classList.add('active');
+
+    startX = event.x - slider.offsetLeft;
     scrollLeft = slider.scrollLeft;
   });
 
@@ -57,12 +60,15 @@
     slider.classList.remove('active');
   });
 
-  slider.addEventListener('mousemove', (e) => {
-    if (!isDown) return;  // stop the fn from running
-    e.preventDefault();
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 3;
-    slider.scrollLeft = scrollLeft - walk;
+  slider.addEventListener('mousemove', (event) => {
+    if (!isDown) {
+      return;
+    } else {
+      event.preventDefault();
+      const x = event.x - slider.offsetLeft;
+      const walk = (x - startX);
+      slider.scrollLeft = scrollLeft - walk;
+    }
   });
 
 </script>
